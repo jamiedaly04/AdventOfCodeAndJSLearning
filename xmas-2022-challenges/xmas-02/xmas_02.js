@@ -63,8 +63,6 @@ let paper = 2
 let scissors = 3
 
 for (let i = 0; i < inputs.length; i++) {
-    //console.log(inputs[i].substring(0, 1))
-    //console.log(inputs[i].substring(2, 3))
 
     switch (inputs[i].substring(0, 1)) {
         case 'A':
