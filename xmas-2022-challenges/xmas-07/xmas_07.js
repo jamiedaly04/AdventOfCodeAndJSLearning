@@ -1,6 +1,6 @@
 // PART 1
 //---------------------------------
-import { Tree, TreeNode } from './trees.js';
+import { Tree } from './trees.js';
 import { input } from './inputs.js'
 
 const testInput = [
@@ -95,29 +95,31 @@ for (let i = 0; i < testInput.length; i++) {
     }
 }
 
-function postOrder(root) {
-    if (tree.find(item).hasChildren) {
-        tree.find(item).children.forEach(child => {
-            tree.find(item).sumOfTheChildren += postOrder(child);
-        });
-    }
-
-    return root.sumOfTheChildren + root.value;
-}
 
 
-function nodeTotalCalc(item, index, arr) {
-    if (tree.find(item).hasChildren) {
-      
+function nodeTotalCalc(item) {
+    if (tree.find(item).hasParent) {
+        tree.find(item).parent.sumOfChildren += (tree.find(item).sumOfChildren + tree.find(item).value)
+        tree.find(item).sumOfChildren += tree.find(item).value
     } else {
-        console.log('Has no children: ' + item)
+        tree.find(item).sumOfChildren += tree.find(item).value
     }
 }
 
+const nodeArray = [...tree.postOrderTraversal()].map(x => (x.key))
+console.log(nodeArray)
+nodeArray.forEach(nodeTotalCalc)
 
 console.log(tree)
-const nodeArray = [...tree.preOrderTraversal()].map(x => (x.key))
 
-console.log(nodeArray)
+const sumOfChildrenArray = [...tree.postOrderTraversal()].map(x => (x.sumOfChildren))
+console.log(sumOfChildrenArray)
 
-nodeArray.forEach(nodeTotalCalc)
+let part1Total = 0
+
+for (let x in sumOfChildrenArray) {
+    if (sumOfChildrenArray[x] <= 100000) {
+       part1Total += sumOfChildrenArray[x]
+    }
+}
+console.log(part1Total)

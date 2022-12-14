@@ -1,8 +1,9 @@
 class TreeNode {
-    constructor(key, value = key, parent = null) {
+    constructor(key, value = key, parent = null, sumOfChildren = 0) {
         this.key = key;
         this.value = value;
         this.parent = parent;
+        this.sumOfChildren = sumOfChildren;
         this.children = [];
     }
 
@@ -20,8 +21,8 @@ class TreeNode {
 }
 
 class Tree {
-    constructor(key, value = key) {
-        this.root = new TreeNode(key, value);
+    constructor(key, value = key, sumOfChildren) {
+        this.root = new TreeNode(key, value, sumOfChildren);
     }
 
     *preOrderTraversal(node = this.root) {
