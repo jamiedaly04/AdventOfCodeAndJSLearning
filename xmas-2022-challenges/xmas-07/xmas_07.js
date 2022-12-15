@@ -1,125 +1,79 @@
 // PART 1
 //---------------------------------
-import { Tree } from './trees.js';
-import { input } from './inputs.js'
+//Note will need to run this in node.js, won't work in browser as it uses node
+import { readFile } from 'fs';
+readFile('xmas-2022-challenges/xmas-07/input.txt', 'utf8', (err, data) => {
+    if (err) {
+        console.error(err);
+        return;
+    }
+    parseInput(data);
+});
 
-const testInput = [
-    '$ cd /',
-    '$ ls',
-    'dir a',
-    '14848514 b.txt',
-    '8504156 c.dat',
-    'dir d',
-    '$ cd a',
-    '$ ls',
-    'dir e',
-    '29116 f',
-    '2557 g',
-    '62596 h.lst',
-    '$ cd e',
-    '$ ls',
-    '584 i',
-    '$ cd..',
-    '$ cd..',
-    '$ cd d',
-    '$ ls',
-    '4060174 j',
-    '8033020 d.log',
-    '5626152 d.ext',
-    '7214296 k',
-]
+class Tree {
+    constructor() {
+        this.view = {};
+        this.pwd = [];
+    }
 
-let tree = new Tree('/', 0);
-//(Key, childKey, childValue)
-/* tree.insert('/', 'A', 0);
-tree.insert('/', 'B', 0);
-tree.insert('A', 'E', 0);
-tree.insert('B', 'D', 0); */
+    addItem(item) {
+        let curDir = this.pwd.reduce((curDir, d) => curDir[d], this.view);
+        // we either add a number to represent a file or an obj to represent a directory
+        curDir[item[1]] = !isNaN(item[0]) ? parseInt(item[0]) : {};
+    }
 
-let currentNode
-let directoryName
-console.log(tree)
-
-/*
-console.log(tree.find(11).hasParent)
-console.log(tree.root.key)
-console.log(tree.root.hasChildren)
-console.log(tree.find(12).parent.key) */
-
-
-for (let i = 0; i < testInput.length; i++) {
-    if (testInput[i].includes('$ cd')) {
-        if (testInput[i].includes('/')) {
-            //Go to base directory
-            console.log(testInput[i])
-            currentNode = tree.find(tree.root.key)
+    changeDir(name) {
+        if (name === "/") {
+            this.pwd = [];
+        } else if (name === "..") {
+            this.pwd.pop();
+        } else {
+            this.pwd.push(name);
         }
-        else if (testInput[i].includes('..')) {
-            //Go up a directory
-            console.log(testInput[i])
-            if (currentNode.hasParent) {
-                currentNode = tree.find(currentNode.key).parent.key
-            }
-        }
-        else {
-            //Go into x directory
-            console.log(testInput[i])
-            directoryName = (testInput[i].slice(4)).trim()
-            currentNode = tree.find(directoryName)
-        }
-    } else if (testInput[i].includes('$ ls')) {
-        console.log(testInput[i])
-        i++
-        do {
-            if (testInput[i].includes('$ cd')) {
-                i--
-                break;
-            } else {
-                if (testInput[i].startsWith('dir')) {
-                    //Create DIR
-                    console.log(testInput[i])
-                    tree.insert(currentNode.key, testInput[i].slice(4).trim(), 0);
-                } else {
-                    //Add file value to node
-                    console.log(testInput[i])
-                    let splitValue = testInput[i].split(" ")
-                    currentNode.value += parseInt(splitValue[0])
-                    console.log(currentNode.value)
-                }
-                i++
-            }
-        } while (i < testInput.length)
-
-    } else {
-        console.log('In ELSE statement, need to investigate why this has happened')
     }
 }
 
+function parseInput(data) {
+    let commands = data.split('\n');
+    let tree = new Tree();
 
-
-function nodeTotalCalc(item) {
-    if (tree.find(item).hasParent) {
-        tree.find(item).parent.sumOfChildren += (tree.find(item).sumOfChildren + tree.find(item).value)
-        tree.find(item).sumOfChildren += tree.find(item).value
-    } else {
-        tree.find(item).sumOfChildren += tree.find(item).value
+    // Build tree
+    for (let i = 0; i < commands.length; i++) {
+        let instr = commands[i].split(" ");
+        if (instr[0] === "$") {
+            if (instr[1] === "cd") tree.changeDir(instr[2]);
+        } else {
+            tree.addItem(instr);
+        }
     }
+
+    let dirs = {};
+    crawl("", tree.view, dirs);
+
+    dirs = Object.fromEntries(Object.entries(dirs).sort((a, b) => a[1] - b[1]));
+    // Part 1
+    console.log(Object.values(dirs));
+    console.log(
+        `Small directory sizes: ${Object.values(dirs)
+            .filter((n) => n < 100000)
+            .reduce((a, n) => a + n, 0)}`
+    );
+
+    let spaceNeeded = 30000000 - (70000000 - dirs["/"]),
+        deleteDir = Object.keys(dirs).filter((dir) => dirs[dir] >= spaceNeeded)[0];
+
+    console.log(`Directory to delete: "${deleteDir}", Size: ${dirs[deleteDir]}`)
 }
 
-const nodeArray = [...tree.postOrderTraversal()].map(x => (x.key))
-console.log(nodeArray)
-nodeArray.forEach(nodeTotalCalc)
-
-console.log(tree)
-
-const sumOfChildrenArray = [...tree.postOrderTraversal()].map(x => (x.sumOfChildren))
-console.log(sumOfChildrenArray)
-
-let part1Total = 0
-
-for (let x in sumOfChildrenArray) {
-    if (sumOfChildrenArray[x] <= 100000) {
-       part1Total += sumOfChildrenArray[x]
+// PART 2
+//---------------------------------
+// Get sizes of directories
+function crawl(directory, node, directories) {
+    let size = 0;
+    for (let [k, v] of Object.entries(node)) {
+        if (!isNaN(v)) size += v;
+        else size += crawl(`${directory}/${k}`, node[k], directories);
     }
-}
-console.log(part1Total)
+    directories[directory ? directory : "/"] = size;
+    return size;
+};
