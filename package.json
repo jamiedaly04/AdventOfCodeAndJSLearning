@@ -16,5 +16,8 @@
     "url": "https://github.com/jamiedaly04/AdventOfCodeAndJSLearning/issues"
   },
   "homepage": "https://github.com/jamiedaly04/AdventOfCodeAndJSLearning#readme",
-  "type": "module"
+  "type": "module",
+  "devDependencies": {
+    "tsx": "^4.19.2"
+  }
 }
