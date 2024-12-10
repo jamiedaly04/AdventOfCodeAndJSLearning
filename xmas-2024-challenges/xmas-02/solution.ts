@@ -67,11 +67,9 @@ for (let i = 0; i < puzzleInput.length; i++) {
   //console.log('- - - - - - - - - - - - - - -');
   //console.log(`Is Report Safe? ${safeReport}`);
   //console.log(`Does report have a gradual change? ${gradualChange}`);
-  //console.log(
-  //  `Does report have an adjacent level change? ${adjacentLevelCheck}`
-  //);
-  //console.log('- - - - - - - - - - - - - - -');
+  //console.log(`Does report have an adjacent level change? ${adjacentLevelCheck}`);
 }
 
+console.log('- - - - - - - - - - - - - - -');
 console.log(`Safe Report Count: ${safeReportCount}`);
 console.log('- - - - - - - - - - - - - - -');
