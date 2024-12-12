@@ -28,5 +28,5 @@ To see challenges and for more info: https://adventofcode.com/
 
    ```
    # or for TypeScript
-   npx xmas-2024-challenges\xmas-01\solution.ts
+   npx tsx xmas-2024-challenges\xmas-01\solution.ts
    ```
