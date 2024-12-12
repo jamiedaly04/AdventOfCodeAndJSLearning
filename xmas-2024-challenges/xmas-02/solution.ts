@@ -37,7 +37,10 @@ function isAdjacentLevel(arr: any[]) {
   });
 }
 
-let safeReportCount = 0;
+// PART 1
+//---------------------------------
+
+/* let safeReportCount = 0;
 
 // Loop through each report row
 for (let i = 0; i < puzzleInput.length; i++) {
@@ -68,6 +71,69 @@ for (let i = 0; i < puzzleInput.length; i++) {
   //console.log(`Is Report Safe? ${safeReport}`);
   //console.log(`Does report have a gradual change? ${gradualChange}`);
   //console.log(`Does report have an adjacent level change? ${adjacentLevelCheck}`);
+}
+
+console.log('- - - - - - - - - - - - - - -');
+console.log(`Safe Report Count: ${safeReportCount}`);
+console.log('- - - - - - - - - - - - - - -'); */
+
+// PART 2
+//---------------------------------
+
+let safeReportCount = 0;
+
+// Loop through each report row
+for (let i = 0; i < puzzleInput.length; i++) {
+  let safeReport = false;
+  let gradualChange = false;
+  let adjacentLevelCheck = false;
+
+  // Log out row items
+  let reportArray: string[] = [];
+  let problematicLevelPosition: number = -1;
+  reportArray = puzzleInput[i].split(' ');
+
+  // Check if report has a gradual change
+  if (
+    (isAscending(reportArray) === true || isDescending(reportArray) === true) &&
+    isAdjacentLevel(reportArray) === true
+  ) {
+    gradualChange = true;
+    adjacentLevelCheck = true;
+  } else {
+    for (let j = 0; j <= reportArray.length; j++) {
+      let reportArrayRemoval = puzzleInput[i].split(' ');
+
+      reportArrayRemoval.splice(j, 1);
+
+      if (
+        (isAscending(reportArrayRemoval) === true ||
+          isDescending(reportArrayRemoval) === true) &&
+        isAdjacentLevel(reportArrayRemoval) === true
+      ) {
+        problematicLevelPosition = j;
+        gradualChange = true;
+        adjacentLevelCheck = true;
+        break;
+      }
+    }
+  }
+
+  // Check if report is safe
+  if (gradualChange === true && adjacentLevelCheck === true) {
+    safeReport = true;
+    safeReportCount++;
+  }
+
+  console.log('- - - - - - - - - - - - - - -');
+  console.log(`${reportArray}`);
+  console.log(`Problematic Level Position: ${problematicLevelPosition}`);
+  console.log(`Is Report Safe? ${safeReport}`);
+  console.log(`Does report have a gradual change? ${gradualChange}`);
+  console.log(
+    `Does report have an adjacent level change? ${adjacentLevelCheck}`
+  );
+  console.log('- - - - - - - - - - - - - - -');
 }
 
 console.log('- - - - - - - - - - - - - - -');
